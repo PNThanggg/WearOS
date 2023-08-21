@@ -3,11 +3,8 @@ package com.pnt.data_layer_wear_os
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import com.google.android.gms.tasks.Tasks
-import android.graphics.BitmapFactory
 import android.util.Log
 import com.google.android.gms.wearable.DataEventBuffer
-import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.Wearable
 import com.google.android.gms.wearable.WearableListenerService

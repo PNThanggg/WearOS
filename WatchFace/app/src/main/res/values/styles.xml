@@ -1,0 +1,10 @@
+<resources>
+
+    <style name="MainActivityTheme.Launch" parent="android:Theme.DeviceDefault">
+        <item name="android:windowBackground">@drawable/splash_icon</item>
+    </style>
+
+    <style name="Widget.WatchFace.Button" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/color_primary_button</item>
+    </style>
+</resources>

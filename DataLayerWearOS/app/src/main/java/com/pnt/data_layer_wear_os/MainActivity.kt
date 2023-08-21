@@ -26,6 +26,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Log.e(TAG, "onCreate")
+
         setContent {
             MainApp(
                 events = clientDataViewModel.events,
@@ -39,18 +41,15 @@ class MainActivity : ComponentActivity() {
     private fun onQueryOtherDevicesClicked() {
         lifecycleScope.launch {
             try {
-
-                Toast.makeText(this@MainActivity, "${clientDataViewModel.image}", Toast.LENGTH_LONG)
-                    .show()
-
-                val nodes = getCapabilitiesForReachableNodes()
-                    .filterValues { MOBILE_CAPABILITY in it || WEAR_CAPABILITY in it }.keys
+                val nodes =
+                    getCapabilitiesForReachableNodes().filterValues { MOBILE_CAPABILITY in it || WEAR_CAPABILITY in it }.keys
 
                 displayNodes(nodes)
             } catch (cancellationException: CancellationException) {
                 throw cancellationException
             } catch (exception: Exception) {
                 Log.d(TAG, "Querying nodes failed: $exception")
+                throw exception
             }
         }
     }
@@ -58,8 +57,8 @@ class MainActivity : ComponentActivity() {
     private fun onQueryMobileCameraClicked() {
         lifecycleScope.launch {
             try {
-                val nodes = getCapabilitiesForReachableNodes()
-                    .filterValues { MOBILE_CAPABILITY in it && CAMERA_CAPABILITY in it }.keys
+                val nodes =
+                    getCapabilitiesForReachableNodes().filterValues { MOBILE_CAPABILITY in it && CAMERA_CAPABILITY in it }.keys
                 displayNodes(nodes)
             } catch (cancellationException: CancellationException) {
                 throw cancellationException
@@ -78,17 +77,13 @@ class MainActivity : ComponentActivity() {
      * This form is easier to work with when trying to operate upon all [Node]s.
      */
     private suspend fun getCapabilitiesForReachableNodes(): Map<Node, Set<String>> =
-        capabilityClient.getAllCapabilities(CapabilityClient.FILTER_REACHABLE)
-            .await()
+        capabilityClient.getAllCapabilities(CapabilityClient.FILTER_REACHABLE).await()
             // Pair the list of all reachable nodes with their capabilities
             .flatMap { (capability, capabilityInfo) ->
                 capabilityInfo.nodes.map { it to capability }
             }
             // Group the pairs by the nodes
-            .groupBy(
-                keySelector = { it.first },
-                valueTransform = { it.second }
-            )
+            .groupBy(keySelector = { it.first }, valueTransform = { it.second })
             // Transform the capability list for each node into a set
             .mapValues { it.value.toSet() }
 
@@ -104,20 +99,43 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        dataClient.addListener(clientDataViewModel)
-        messageClient.addListener(clientDataViewModel)
-        capabilityClient.addListener(
-            clientDataViewModel,
-            Uri.parse("wear://"),
-            CapabilityClient.FILTER_REACHABLE
-        )
+
+        Log.e(TAG, "onResume")
+
+        try {
+            dataClient.addListener(clientDataViewModel)
+            Log.e(TAG, "onResume: ${clientDataViewModel.image}")
+
+            messageClient.addListener(clientDataViewModel)
+            Log.e(TAG, "onResume: ${clientDataViewModel.image}")
+
+            capabilityClient.addListener(
+                clientDataViewModel, Uri.parse("wear://"), CapabilityClient.FILTER_REACHABLE
+            )
+            Log.e(TAG, "onResume: ${clientDataViewModel.image}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        dataClient.removeListener(clientDataViewModel)
-        messageClient.removeListener(clientDataViewModel)
-        capabilityClient.removeListener(clientDataViewModel)
+
+        Log.e(TAG, "onPause")
+
+        try {
+            dataClient.removeListener(clientDataViewModel)
+            Log.e(TAG, "onPause: ${clientDataViewModel.image}")
+
+            messageClient.removeListener(clientDataViewModel)
+            Log.e(TAG, "onPause: ${clientDataViewModel.image}")
+
+            capabilityClient.removeListener(clientDataViewModel)
+            Log.e(TAG, "onPause: ${clientDataViewModel.image}")
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     companion object {

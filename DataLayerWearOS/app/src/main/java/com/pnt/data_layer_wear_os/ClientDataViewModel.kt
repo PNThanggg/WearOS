@@ -117,6 +117,7 @@ class ClientDataViewModel(
 
     private suspend fun loadBitmap(asset: Asset?): Bitmap? {
         if (asset == null) return null
+
         val response =
             Wearable.getDataClient(getApplication<Application>()).getFdForAsset(asset).await()
         return response.inputStream.use { inputStream ->

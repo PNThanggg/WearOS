@@ -188,7 +188,7 @@ class MainActivity : ComponentActivity() {
                 }.await()
 
                 Log.d(TAG, "DataItem saved: $result")
-                Toast.makeText(this@MainActivity, "DataItem saved: $result", Toast.LENGTH_LONG).show()
+//                Toast.makeText(this@MainActivity, "DataItem saved: $result", Toast.LENGTH_LONG).show()
             } catch (cancellationException: CancellationException) {
                 throw cancellationException
             } catch (exception: Exception) {
